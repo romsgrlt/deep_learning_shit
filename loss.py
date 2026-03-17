@@ -54,7 +54,7 @@ class LossComputer:
 
         return actual_loss
 
-    def compute_robust_loss(self, group_loss, group_count):
+    def compute_robust_loss(self, group_loss):
         adjusted_loss = group_loss
         if torch.all(self.adj>0):
             adjusted_loss += self.adj/torch.sqrt(self.group_counts)
@@ -66,7 +66,7 @@ class LossComputer:
         robust_loss = group_loss @ self.adv_probs
         return robust_loss, self.adv_probs
 
-    def compute_robust_loss_btl(self, group_loss, group_count):
+    def compute_robust_loss_btl(self, group_loss):
         adjusted_loss = self.exp_avg_loss + self.adj/torch.sqrt(self.group_counts)
         return self.compute_robust_loss_greedy(group_loss, adjusted_loss)
 
@@ -89,7 +89,6 @@ class LossComputer:
         return robust_loss, unsorted_weights
 
     def compute_group_avg(self, losses, group_idx):
-        # compute observed counts and mean loss for each group
         group_map = (group_idx == torch.arange(self.n_groups).unsqueeze(1).long().cuda()).float()
         group_count = group_map.sum(1)
         group_denom = group_count + (group_count==0).float() # avoid nans
@@ -143,15 +142,15 @@ class LossComputer:
         self.avg_per_sample_loss = group_frac @ self.avg_group_loss
         self.avg_acc = group_frac @ self.avg_group_acc
 
-    def get_model_stats(self, model, args, stats_dict):
+    def get_model_stats(self, model, stats_dict, weight_decay):
         model_norm_sq = 0.
         for param in model.parameters():
             model_norm_sq += torch.norm(param) ** 2
         stats_dict['model_norm_sq'] = model_norm_sq.item()
-        stats_dict['reg_loss'] = args.weight_decay / 2 * model_norm_sq.item()
+        stats_dict['reg_loss'] = weight_decay / 2 * model_norm_sq.item()
         return stats_dict
 
-    def get_stats(self, model=None, args=None):
+    def get_stats(self, weight_decay, model=None):
         stats_dict = {}
         for idx in range(self.n_groups):
             stats_dict[f'avg_loss_group:{idx}'] = self.avg_group_loss[idx].item()
@@ -167,8 +166,7 @@ class LossComputer:
 
         # Model stats
         if model is not None:
-            assert args is not None
-            stats_dict = self.get_model_stats(model, args, stats_dict)
+            stats_dict = self.get_model_stats(model, stats_dict, weight_decay)
 
         return stats_dict
 

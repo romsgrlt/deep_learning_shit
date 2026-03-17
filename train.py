@@ -8,7 +8,7 @@ from loss import LossComputer
 
 
 
-def run_epoch(epoch, model, optimizer, loader, loss_computer, logger, csv_logger, is_training, log_every=50):
+def run_epoch(epoch, model, optimizer, loader, loss_computer, logger, csv_logger, weight_decay, is_training, log_every=50):
 
     if is_training:
         model.train()
@@ -34,13 +34,13 @@ def run_epoch(epoch, model, optimizer, loader, loss_computer, logger, csv_logger
                 optimizer.step()
 
             if is_training and (batch_idx+1) % log_every==0:
-                csv_logger.log(epoch, batch_idx, loss_computer.get_stats(model))
+                csv_logger.log(epoch, batch_idx, loss_computer.get_stats(weight_decay, model))
                 csv_logger.flush()
                 loss_computer.log_stats(logger, is_training)
                 loss_computer.reset_stats()
 
         if (not is_training) or loss_computer.batch_count > 0:
-            csv_logger.log(epoch, batch_idx, loss_computer.get_stats(model))
+            csv_logger.log(epoch, batch_idx, loss_computer.get_stats(weight_decay, model))
             csv_logger.flush()
             loss_computer.log_stats(logger, is_training)
             if is_training:
@@ -79,7 +79,6 @@ def train(model, criterion, dataset, logger, train_csv_logger, val_csv_logger, t
         weight_decay = weight_decay
     )
 
-    best_val_acc = 0
     for epoch in range(0, n_epochs):
 
         logger.write('\nEpoch [%d]:\n' % epoch)
@@ -90,11 +89,11 @@ def train(model, criterion, dataset, logger, train_csv_logger, val_csv_logger, t
             optimizer,
             dataset['train_loader'],
             train_loss_computer,
-            logger, train_csv_logger,
+            logger,
+            train_csv_logger,
+            weight_decay,
             is_training=True,
-            show_progress= True,
             log_every=50,
-            scheduler=None
         )
 
         logger.write(f'\nValidation:\n')
@@ -114,6 +113,7 @@ def train(model, criterion, dataset, logger, train_csv_logger, val_csv_logger, t
             val_loss_computer,
             logger,
             val_csv_logger,
+            weight_decay,
             is_training=False
         )
 
@@ -130,8 +130,8 @@ def train(model, criterion, dataset, logger, train_csv_logger, val_csv_logger, t
                 optimizer,
                 dataset['test_loader'],
                 test_loss_computer,
-                None,
                 test_csv_logger,
+                weight_decay,
                 is_training=False
             )
 

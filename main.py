@@ -31,7 +31,7 @@ def prepare_data():
     full_dataset = CUBDataset(
         root_dir='cub',
         target_name='waterbird_complete95',
-        confounder_names='forest2water2',
+        confounder_names=['forest2water2'],
         model_type='resnet50',
         augment_data=False
     )

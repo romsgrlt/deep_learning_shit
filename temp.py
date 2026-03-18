@@ -146,7 +146,7 @@ class DRODataset(Dataset):
         group_array = []
         y_array = []
 
-        for x, y, g in tqdm(self, desc="Preparing dataset", total=len(dataset))
+        for x, y, g in tqdm(self, desc="Preparing dataset", total=len(dataset)):
             group_array.append(g)
             y_array.append(y)
         self._group_array = torch.LongTensor(group_array)

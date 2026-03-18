@@ -31,7 +31,7 @@ class LossComputer:
 
         self.reset_stats()
 
-    def loss(self, yhat, y, group_idx=None, is_training=False):
+    def loss(self, yhat, y, group_idx=None):
         # compute per-sample and per-group losses
         per_sample_losses = self.criterion(yhat, y)
         group_loss, group_count = self.compute_group_avg(per_sample_losses, group_idx)
@@ -170,10 +170,9 @@ class LossComputer:
 
         return stats_dict
 
-    def log_stats(self, logger, is_training):
+    def log_stats(self, logger):
         if logger is None:
             return
-
         logger.write(f'Average incurred loss: {self.avg_per_sample_loss.item():.3f}  \n')
         logger.write(f'Average sample loss: {self.avg_actual_loss.item():.3f}  \n')
         logger.write(f'Average acc: {self.avg_acc.item():.3f}  \n')

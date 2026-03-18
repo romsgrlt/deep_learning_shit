@@ -3,7 +3,7 @@ import sys
 import os
 
 class Logger(object):
-    def __init__(self, fpath=None, mode='w'):
+    def __init__(self, fpath):
         self.console = sys.stdout
         self.file = open(fpath, 'w')
 
@@ -18,22 +18,19 @@ class Logger(object):
 
     def write(self, msg):
         self.console.write(msg)
-        if self.file is not None:
-            self.file.write(msg)
+        self.file.write(msg)
 
     def flush(self):
         self.console.flush()
-        if self.file is not None:
-            self.file.flush()
-            os.fsync(self.file.fileno())
+        self.file.flush()
+        os.fsync(self.file.fileno())
 
     def close(self):
         self.console.close()
-        if self.file is not None:
-            self.file.close()
+        self.file.close()
 
 class CSVBatchLogger:
-    def __init__(self, csv_path, n_groups, mode='w'):
+    def __init__(self, csv_path, n_groups):
         columns = ['epoch', 'batch']
         for idx in range(n_groups):
             columns.append(f'avg_loss_group:{idx}')
@@ -49,11 +46,10 @@ class CSVBatchLogger:
         columns.append('reg_loss')
 
         self.path = csv_path
-        self.file = open(csv_path, mode)
+        self.file = open(csv_path, 'w')
         self.columns = columns
         self.writer = csv.DictWriter(self.file, fieldnames=columns)
-        if mode=='w':
-            self.writer.writeheader()
+        self.writer.writeheader()
 
     def log(self, epoch, batch, stats_dict):
         stats_dict['epoch'] = epoch

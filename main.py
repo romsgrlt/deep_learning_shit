@@ -77,9 +77,9 @@ def main():
 
     criterion = torch.nn.CrossEntropyLoss(reduction='none')
 
-    train_csv_logger = CSVBatchLogger('./logs/train.csv', train_data.n_groups, mode='w')
-    val_csv_logger = CSVBatchLogger('./logs/val.csv', train_data.n_groups, mode='w')
-    test_csv_logger = CSVBatchLogger('./logs/test.csv', train_data.n_groups, mode='w')
+    train_csv_logger = CSVBatchLogger('./logs/train.csv', train_data.n_groups)
+    val_csv_logger = CSVBatchLogger('./logs/val.csv', train_data.n_groups)
+    test_csv_logger = CSVBatchLogger('./logs/test.csv', train_data.n_groups)
     train(model, criterion, data, logger, train_csv_logger, val_csv_logger, test_csv_logger, weight_decay, n_epochs)
 
     train_csv_logger.close()

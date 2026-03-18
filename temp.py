@@ -5,6 +5,7 @@ from PIL import Image
 import numpy as np
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, Subset, WeightedRandomSampler, DataLoader
+from tqdm import tqdm
 
 
 def get_transform_cub(train, augment_data):
@@ -145,7 +146,7 @@ class DRODataset(Dataset):
         group_array = []
         y_array = []
 
-        for x,y,g in self:
+        for x, y, g in tqdm(self, desc="Preparing dataset", total=len(dataset))
             group_array.append(g)
             y_array.append(y)
         self._group_array = torch.LongTensor(group_array)

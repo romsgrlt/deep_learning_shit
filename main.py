@@ -47,7 +47,7 @@ def prepare_data():
     ) for split in splits]
 
 def main():
-    logger = Logger('./logs/log.txt', 'w')
+    logger = Logger('./logs/log.txt')
 
     train_data, val_data, test_data = prepare_data()
 

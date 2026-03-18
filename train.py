@@ -22,7 +22,7 @@ def eval_epoch(epoch, model, loader, loss_computer, logger, csv_logger, weight_d
 
         csv_logger.log(epoch, batch_idx, loss_computer.get_stats(weight_decay, model))
         csv_logger.flush()
-        loss_computer.log_stats(logger, False)
+        loss_computer.log_stats(logger)
 
 
 def train_epoch(epoch, model, optimizer, loader, loss_computer, logger, csv_logger, weight_decay, log_every):
@@ -47,13 +47,13 @@ def train_epoch(epoch, model, optimizer, loader, loss_computer, logger, csv_logg
             if (batch_idx + 1) % log_every == 0:
                 csv_logger.log(epoch, batch_idx, loss_computer.get_stats(weight_decay, model))
                 csv_logger.flush()
-                loss_computer.log_stats(logger, True)
+                loss_computer.log_stats(logger)
                 loss_computer.reset_stats()
 
         if loss_computer.batch_count > 0:
             csv_logger.log(epoch, batch_idx, loss_computer.get_stats(weight_decay, model))
             csv_logger.flush()
-            loss_computer.log_stats(logger, True)
+            loss_computer.log_stats(logger)
             loss_computer.reset_stats()
 
 

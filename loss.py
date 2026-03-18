@@ -32,7 +32,6 @@ class LossComputer:
         self.reset_stats()
 
     def loss(self, yhat, y, group_idx=None):
-        # compute per-sample and per-group losses
         per_sample_losses = self.criterion(yhat, y)
         group_loss, group_count = self.compute_group_avg(per_sample_losses, group_idx)
         group_acc, group_count = self.compute_group_avg((torch.argmax(yhat,1)==y).float(), group_idx)

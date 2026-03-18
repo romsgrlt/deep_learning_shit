@@ -67,7 +67,7 @@ def train(model, criterion, dataset, logger, train_csv_logger, val_csv_logger, t
     else:
         adjustments = np.array(adjustments)
 
-    train_loss_computer = LossComputer(criterion, is_robust=False, dataset=dataset['train_data'], alpha=0.2, gamma=0.1, adj=adjustments, step_size=0.01, normalize_loss=False, btl=False, min_var_weight=0)
+    train_loss_computer = LossComputer(criterion, is_robust=True, dataset=dataset['train_data'], alpha=0.2, gamma=0.1, adj=adjustments, step_size=0.01, normalize_loss=False, btl=False, min_var_weight=0)
     optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=0.001, momentum=0.9, weight_decay=weight_decay)
 
     for epoch in range(0, n_epochs):

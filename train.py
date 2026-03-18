@@ -1,13 +1,12 @@
 import numpy as np
 
 import torch
-from torch.utils.data import Dataset, DataLoader, Subset
 
 from tqdm import tqdm
 from loss import LossComputer
 
 
-def eval(epoch, model, loader, loss_computer, logger, csv_logger, weight_decay):
+def eval_epoch(epoch, model, loader, loss_computer, logger, csv_logger, weight_decay):
     model.eval()
     prog_bar_loader = tqdm(loader)
 
@@ -26,7 +25,7 @@ def eval(epoch, model, loader, loss_computer, logger, csv_logger, weight_decay):
         loss_computer.log_stats(logger, False)
 
 
-def train_epoch(epoch, model, optimizer, loader, loss_computer, logger, csv_logger, weight_decay, log_every=50):
+def train_epoch(epoch, model, optimizer, loader, loss_computer, logger, csv_logger, weight_decay, log_every):
     model.train()
     prog_bar_loader = tqdm(loader)
 
@@ -75,15 +74,15 @@ def train(model, criterion, dataset, logger, train_csv_logger, val_csv_logger, t
 
         logger.write('\nEpoch [%d]:\n' % epoch)
         logger.write(f'Training:\n')
-        train(epoch, model, optimizer, dataset['train_loader'], train_loss_computer, logger, train_csv_logger, weight_decay, 50)
+        train_epoch(epoch, model, optimizer, dataset['train_loader'], train_loss_computer, logger, train_csv_logger, weight_decay, 50)
 
         logger.write(f'\nValidation:\n')
         val_loss_computer = LossComputer(criterion, is_robust=False, dataset=dataset['val_data'], step_size=0.01, alpha=0.2)
-        eval(epoch, model, dataset['val_loader'], val_loss_computer, logger, val_csv_logger, weight_decay)
+        eval_epoch(epoch, model, dataset['val_loader'], val_loss_computer, logger, val_csv_logger, weight_decay)
 
         if dataset['test_data'] is not None:
             test_loss_computer = LossComputer(criterion, is_robust=False, dataset=dataset['test_data'], step_size=0.01, alpha=0.2)
-            eval(epoch, model, dataset['test_loader'], test_loss_computer, None, test_csv_logger, weight_decay)
+            eval_epoch(epoch, model, dataset['test_loader'], test_loss_computer, None, test_csv_logger, weight_decay)
 
         if (epoch + 1) % 1 == 0:
             for param_group in optimizer.param_groups:

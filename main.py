@@ -14,6 +14,7 @@ from temp import CUBDataset, DRODataset
 
 
 n_epochs = 300
+weight_decay = 0.0001
 
 def log_data(data, logger):
     logger.write('Training Data...\n')
@@ -79,8 +80,7 @@ def main():
     train_csv_logger = CSVBatchLogger('./logs/train.csv', train_data.n_groups, mode='w')
     val_csv_logger = CSVBatchLogger('./logs/val.csv', train_data.n_groups, mode='w')
     test_csv_logger = CSVBatchLogger('./logs/test.csv', train_data.n_groups, mode='w')
-
-    train(model, criterion, data, logger, train_csv_logger, val_csv_logger, test_csv_logger, epoch_offset=0)
+    train(model, criterion, data, logger, train_csv_logger, val_csv_logger, test_csv_logger, weight_decay, n_epochs)
 
     train_csv_logger.close()
     val_csv_logger.close()

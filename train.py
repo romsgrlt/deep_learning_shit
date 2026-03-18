@@ -125,11 +125,10 @@ def train(model, criterion, dataset, logger, train_csv_logger, val_csv_logger, t
                 step_size=0.01,
                 alpha=0.2)
             run_epoch(
-                epoch,
-                model,
-                optimizer,
+                epoch, model, optimizer,
                 dataset['test_loader'],
                 test_loss_computer,
+                None,
                 test_csv_logger,
                 weight_decay,
                 is_training=False
@@ -144,3 +143,5 @@ def train(model, criterion, dataset, logger, train_csv_logger, val_csv_logger, t
             torch.save(model, './logs/%d_model.pth' % epoch)
 
         logger.write('\n')
+
+

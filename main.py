@@ -85,3 +85,6 @@ def main():
     train_csv_logger.close()
     val_csv_logger.close()
     test_csv_logger.close()
+
+if __name__ == '__main__':
+    main()
